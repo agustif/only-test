@@ -1,0 +1,55 @@
+{
+  "name": "@agustif/only-test",
+  "version": "0.1.0",
+  "description": "Enforce an approved test runner and silently redirect bare bun test to it",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "only-test": "dist/cli.js"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agustif/only-test.git"
+  },
+  "bugs": {
+    "url": "https://github.com/agustif/only-test/issues"
+  },
+  "homepage": "https://github.com/agustif/only-test#readme",
+  "keywords": [
+    "bun",
+    "vitest",
+    "jest",
+    "test",
+    "shim",
+    "policy"
+  ],
+  "packageManager": "bun@1.3.9",
+  "scripts": {
+    "build": "bunx tsc -p tsconfig.json",
+    "check": "bunx tsc -p tsconfig.json --pretty false",
+    "lint": "bunx @biomejs/biome check .",
+    "format": "bunx @biomejs/biome format --write .",
+    "test": "bunx vitest run",
+    "smoke": "node dist/cli.js --help"
+  },
+  "dependencies": {
+    "@effect/cli": "0.73.2",
+    "@effect/platform": "0.94.5",
+    "@effect/platform-node": "0.104.1",
+    "@effect/printer": "0.47.0",
+    "@effect/printer-ansi": "0.47.0",
+    "@effect/typeclass": "0.38.0",
+    "effect": "3.19.19"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.6",
+    "@types/node": "25.4.0",
+    "typescript": "5.9.3",
+    "vitest": "4.0.18"
+  }
+}

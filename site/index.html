@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>only-test</title>
+    <meta
+      name="description"
+      content="Enforce Vitest in a repo and optionally intercept bare bun test with a repo-local Bun shim."
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #0f172a;
+        --panel: #111827;
+        --line: #334155;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #22c55e;
+        --accent-2: #38bdf8;
+      }
+      body {
+        margin: 0;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 28%),
+          radial-gradient(circle at top right, rgba(34, 197, 94, 0.18), transparent 25%),
+          var(--bg);
+        color: var(--text);
+      }
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 64px 24px 96px;
+      }
+      .eyebrow {
+        color: var(--accent-2);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 12px;
+        margin-bottom: 12px;
+      }
+      h1 {
+        font-size: clamp(42px, 8vw, 78px);
+        line-height: 0.96;
+        margin: 0 0 16px;
+      }
+      .lede {
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.6;
+        max-width: 760px;
+      }
+      .panel {
+        margin-top: 28px;
+        background: rgba(17, 24, 39, 0.82);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 20px;
+      }
+      pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      code {
+        font-family:
+          ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          Monaco,
+          Consolas,
+          monospace;
+      }
+      .grid {
+        display: grid;
+        gap: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        margin-top: 32px;
+      }
+      .card {
+        background: rgba(15, 23, 42, 0.85);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 20px;
+      }
+      h2 {
+        margin: 0 0 12px;
+        font-size: 20px;
+      }
+      p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+      .footer {
+        margin-top: 36px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+      a {
+        color: var(--text);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="eyebrow">only-test</div>
+      <h1>Enforce Vitest. Intercept `bun test`.</h1>
+      <p class="lede">
+        `only-test` lets a repo declare one approved test runner and, when activated, silently
+        redirects bare `bun test` to that runner. Supports `bun-test`, `vitest`, and `jest`.
+      </p>
+
+      <section class="panel">
+        <pre><code>curl -fsSL https://agustif.github.io/only-test/install.sh | bash</code></pre>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2>What it solves</h2>
+          <p>
+            `bun run test`, `npm test`, and `pnpm test` all go through project scripts. Bare
+            `bun test` does not. `only-test` installs the missing policy boundary.
+          </p>
+        </article>
+        <article class="card">
+          <h2>Quick start</h2>
+          <p>
+            Run `only-test install --runner vitest --sync-scripts`, then
+            `eval "$(only-test activate)"` in the target repo.
+          </p>
+        </article>
+        <article class="card">
+          <h2>Runners</h2>
+          <p>
+            First release supports `bun-test`, `vitest`, and `jest`. The global Bun shim silently
+            redirects `bun test` to the configured runner.
+          </p>
+        </article>
+      </section>
+
+      <div class="footer">
+        <a href="https://github.com/agustif/only-test">GitHub</a>
+        <a href="https://github.com/agustif/only-test/releases">Releases</a>
+        <a href="https://github.com/agustif/only-test#readme">README</a>
+      </div>
+    </main>
+  </body>
+  </html>
