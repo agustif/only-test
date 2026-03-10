@@ -1,6 +1,6 @@
 {
   "name": "@agustif/only-test",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Enforce an approved test runner and silently redirect bare bun test to it",
   "type": "module",
   "license": "MIT",
@@ -39,11 +39,16 @@
   },
   "dependencies": {
     "@effect/cli": "0.73.2",
+    "@effect/cluster": "0.56.4",
+    "@effect/experimental": "0.58.0",
     "@effect/platform": "0.94.5",
     "@effect/platform-node": "0.104.1",
     "@effect/printer": "0.47.0",
     "@effect/printer-ansi": "0.47.0",
+    "@effect/rpc": "0.73.2",
+    "@effect/sql": "0.49.0",
     "@effect/typeclass": "0.38.0",
+    "@effect/workflow": "0.16.0",
     "effect": "3.19.19"
   },
   "devDependencies": {
