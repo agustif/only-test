@@ -3,149 +3,299 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>only-test</title>
+    <title>only-test</title>
     <meta
       name="description"
-      content="Enforce Vitest in a repo and optionally intercept bare bun test with a repo-local Bun shim."
+      content="A policy layer for bun-test, Vitest, and Jest that silently redirects bare bun test to the configured runner."
     />
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
       :root {
-        color-scheme: light dark;
-        --bg: #0f172a;
-        --panel: #111827;
-        --line: #334155;
-        --text: #e5e7eb;
-        --muted: #94a3b8;
-        --accent: #22c55e;
-        --accent-2: #38bdf8;
+        color-scheme: dark;
+        --bg: #111315;
+        --surface: #191c1f;
+        --surface-2: #23272b;
+        --line: #343b42;
+        --text: #f3f4f6;
+        --muted: #a0a7af;
+        --green: #26b36d;
+        --amber: #d98c2b;
+        --cyan: #4fb3c8;
       }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         margin: 0;
-        font-family:
-          ui-sans-serif,
-          system-ui,
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
-          sans-serif;
-        background:
-          radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 28%),
-          radial-gradient(circle at top right, rgba(34, 197, 94, 0.18), transparent 25%),
-          var(--bg);
+        font-family: "IBM Plex Sans", "Avenir Next", sans-serif;
+        background: var(--bg);
         color: var(--text);
       }
+
       main {
-        max-width: 960px;
+        max-width: 1120px;
         margin: 0 auto;
-        padding: 64px 24px 96px;
+        padding: 40px 24px 80px;
       }
-      .eyebrow {
-        color: var(--accent-2);
-        text-transform: uppercase;
-        letter-spacing: 0.12em;
-        font-size: 12px;
-        margin-bottom: 12px;
+
+      .frame {
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, rgba(35, 39, 43, 0.72), rgba(25, 28, 31, 0.96));
       }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.35fr 0.95fr;
+        gap: 0;
+        min-height: 420px;
+      }
+
+      .hero-copy,
+      .hero-side {
+        padding: 28px;
+      }
+
+      .hero-copy {
+        border-right: 1px solid var(--line);
+      }
+
+      .mark {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 28px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .mark strong {
+        color: var(--text);
+        font-size: 14px;
+      }
+
       h1 {
-        font-size: clamp(42px, 8vw, 78px);
-        line-height: 0.96;
-        margin: 0 0 16px;
+        margin: 0 0 14px;
+        font-size: clamp(42px, 8vw, 74px);
+        line-height: 0.94;
+        letter-spacing: -0.04em;
       }
-      .lede {
+
+      .summary {
+        max-width: 620px;
         color: var(--muted);
         font-size: 18px;
-        line-height: 1.6;
-        max-width: 760px;
+        line-height: 1.7;
+        margin: 0 0 28px;
       }
-      .panel {
-        margin-top: 28px;
-        background: rgba(17, 24, 39, 0.82);
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        padding: 20px;
-      }
-      pre {
-        margin: 0;
-        white-space: pre-wrap;
-        word-break: break-word;
+
+      .terminal {
+        background: #0d0f10;
+        border: 1px solid #262b30;
+        padding: 18px;
+        font-family: "IBM Plex Mono", monospace;
         font-size: 14px;
-        line-height: 1.5;
+        line-height: 1.65;
+        color: #dce2e8;
       }
-      code {
-        font-family:
-          ui-monospace,
-          SFMono-Regular,
-          Menlo,
-          Monaco,
-          Consolas,
-          monospace;
+
+      .hero-side {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 18px;
       }
-      .grid {
+
+      .panel-title {
+        margin: 0 0 10px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .runner-list {
+        border-top: 1px solid var(--line);
+      }
+
+      .runner-row {
         display: grid;
-        gap: 20px;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        margin-top: 32px;
+        grid-template-columns: 110px 1fr;
+        gap: 14px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--line);
       }
-      .card {
-        background: rgba(15, 23, 42, 0.85);
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        padding: 20px;
+
+      .runner-row code {
+        font-family: "IBM Plex Mono", monospace;
+        color: var(--text);
+        font-size: 13px;
       }
-      h2 {
-        margin: 0 0 12px;
-        font-size: 20px;
-      }
-      p {
+
+      .runner-row p {
         margin: 0;
         color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .card h2 {
+        margin: 0 0 10px;
+        font-size: 16px;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .step {
+        padding: 20px;
+      }
+
+      .step-number {
+        font-family: "IBM Plex Mono", monospace;
+        color: var(--amber);
+        margin-bottom: 12px;
+      }
+
+      .step pre {
+        margin: 10px 0 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: "IBM Plex Mono", monospace;
+        color: #dce2e8;
+        font-size: 13px;
         line-height: 1.65;
       }
+
       .footer {
-        margin-top: 36px;
         display: flex;
         flex-wrap: wrap;
-        gap: 14px;
+        gap: 16px;
+        margin-top: 24px;
       }
+
       a {
         color: var(--text);
+        text-decoration-color: rgba(255, 255, 255, 0.28);
+      }
+
+      @media (max-width: 900px) {
+        .hero,
+        .grid,
+        .steps {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-copy {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
       }
     </style>
   </head>
   <body>
     <main>
-      <div class="eyebrow">only-test</div>
-      <h1>Enforce Vitest. Intercept `bun test`.</h1>
-      <p class="lede">
-        `only-test` lets a repo declare one approved test runner and, when activated, silently
-        redirects bare `bun test` to that runner. Supports `bun-test`, `vitest`, and `jest`.
-      </p>
-
-      <section class="panel">
-        <pre><code>curl -fsSL https://agustif.github.io/only-test/install.sh | bash</code></pre>
+      <section class="hero frame">
+        <div class="hero-copy">
+          <div class="mark">
+            <strong>only-test</strong>
+            <span>runner policy for Bun-heavy repos</span>
+          </div>
+          <h1>Choose one runner. Let `bun test` follow policy.</h1>
+          <p class="summary">
+            `only-test` is the generic line: a repo declares one approved runner, the global Bun
+            shim reads that policy, and bare `bun test` is redirected without developers needing to
+            remember which command path is safe.
+          </p>
+          <div class="terminal">curl -fsSL https://agustif.github.io/only-test/install.sh | bash</div>
+        </div>
+        <aside class="hero-side">
+          <div>
+            <p class="panel-title">Supported in this release</p>
+            <div class="runner-list">
+              <div class="runner-row">
+                <code>bun-test</code>
+                <p>Keep Bun’s own runner, but make the choice explicit and consistent across the repo.</p>
+              </div>
+              <div class="runner-row">
+                <code>vitest</code>
+                <p>Redirect bare `bun test` to the local Vitest binary resolved from the repo.</p>
+              </div>
+              <div class="runner-row">
+                <code>jest</code>
+                <p>Use the same Bun interception mechanism while standardizing on Jest instead.</p>
+              </div>
+            </div>
+          </div>
+          <div class="frame card">
+            <h2>Default shape</h2>
+            <p>
+              Minimal repo config, global shim by default, optional script syncing, optional local
+              shim when you need hermetic behavior.
+            </p>
+          </div>
+        </aside>
       </section>
 
       <section class="grid">
-        <article class="card">
-          <h2>What it solves</h2>
+        <article class="card frame">
+          <h2>Minimal repo state</h2>
           <p>
-            `bun run test`, `npm test`, and `pnpm test` all go through project scripts. Bare
-            `bun test` does not. `only-test` installs the missing policy boundary.
+            The preferred path stores policy in `package.json#onlyTest` or `only-test.json`
+            instead of littering the repo with enforcement artifacts.
           </p>
         </article>
-        <article class="card">
-          <h2>Quick start</h2>
+        <article class="card frame">
+          <h2>Global enforcement</h2>
           <p>
-            Run `only-test install --runner vitest --sync-scripts`, then
-            `eval "$(only-test activate)"` in the target repo.
+            The machine-level Bun shim lives under `~/.local/share/only-test/`, so one setup step
+            can protect many repos.
           </p>
         </article>
-        <article class="card">
-          <h2>Runners</h2>
+        <article class="card frame">
+          <h2>Opt-in repo shims</h2>
           <p>
-            First release supports `bun-test`, `vitest`, and `jest`. The global Bun shim silently
-            redirects `bun test` to the configured runner.
+            If a team needs local-only enforcement for CI or a hermetic workspace, the repo-local
+            shim path is still available.
           </p>
+        </article>
+      </section>
+
+      <section class="steps">
+        <article class="step frame">
+          <div class="step-number">01</div>
+          <h2>Declare policy</h2>
+          <pre><code>only-test init --runner vitest</code></pre>
+        </article>
+        <article class="step frame">
+          <div class="step-number">02</div>
+          <h2>Install the shim</h2>
+          <pre><code>only-test setup-shell</code></pre>
+        </article>
+        <article class="step frame">
+          <div class="step-number">03</div>
+          <h2>Activate once</h2>
+          <pre><code>eval "$(only-test activate)"</code></pre>
         </article>
       </section>
 
